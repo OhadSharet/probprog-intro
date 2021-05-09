@@ -9,6 +9,7 @@ using Turing, StatsPlots, Random
 
 # ╔═╡ ecd0125d-38a0-4d59-a5d8-f1ba8f7768a3
 function rocket_lunch(v0,angle,dt=1)
+	c=5
     vy = v0 * sin(angle)
     vx = v0 * cos(angle)
     x = 0
@@ -16,8 +17,8 @@ function rocket_lunch(v0,angle,dt=1)
     gravity = 10
 
     while y>0
-      wind = rand(Normal(0,5))#TODO:check
-      x = x+(vx+wind)*dt
+      wind = rand(Normal(0,5))
+      x = x+(vx+wind)*dt - (c*MathConstants.e^-y)*dt
       y = y+vy*dt
       vy = vy-s*dt
     end
@@ -31,20 +32,20 @@ function rocket_lunch(v0,angle,dt=1)
      v0 ~Exponential(L)
      angle ~ Uniform(0,pi/2)
      x = rocket_lunch(v0,angle,1)
-     x~Normal(L,5)
+     x~Normal(L,1)
 end
 
 
 # ╔═╡ 64b8b910-bb17-47a9-93c1-d7d9e921fd9d
 begin
-	iterations = 1000
+	iterations = 100000
 	
 	ϵ = 0.05
 	τ = 10
 	
 	chain = sample(model(1000,1), HMC(ϵ, τ), iterations)
-	histogram(chain)#TODO: how can i crate plot with 2 parameters
-	
+	#histogram(chain)
+	histogram2d(chain[:angle],chain[:v0],nbins=200)
 end
 
 # ╔═╡ Cell order:
