@@ -20,7 +20,7 @@ function rocket_lunch(v0,angle,dt=1)
       wind = rand(Normal(0,5))
       x = x+(vx+wind)*dt - (c*MathConstants.e^-y)*dt
       y = y+vy*dt
-      vy = vy-s*dt
+      vy = vy-gravity*dt
     end
      return x
    end
@@ -28,22 +28,21 @@ function rocket_lunch(v0,angle,dt=1)
 # ╔═╡ 2039f650-4b48-4e3f-9445-b3a1fdf37639
 
 @model function model(L, dt)
-     #v0 ~Normal(110,7) #TODO: try and cange that to unifom desrbiotion
-     v0 ~Exponential(L)
+     v0 ~Exponential(0.02)
      angle ~ Uniform(0,pi/2)
      x = rocket_lunch(v0,angle,1)
      x~Normal(L,1)
 end
 
 
-# ╔═╡ 64b8b910-bb17-47a9-93c1-d7d9e921fd9d
+# ╔═╡ 3d510337-2fc8-4768-bbea-4f3e83cee127
 begin
-	iterations = 100000
+	iterations = 1000
 	
 	ϵ = 0.05
 	τ = 10
 	
-	chain = sample(model(1000,1), HMC(ϵ, τ), iterations)
+	chain = sample(model(10,1), HMC(ϵ, τ), iterations)
 	#histogram(chain)
 	histogram2d(chain[:angle],chain[:v0],nbins=200)
 end
@@ -52,4 +51,4 @@ end
 # ╠═4b2f66ce-af34-11eb-187a-13e88b091642
 # ╠═ecd0125d-38a0-4d59-a5d8-f1ba8f7768a3
 # ╠═2039f650-4b48-4e3f-9445-b3a1fdf37639
-# ╠═64b8b910-bb17-47a9-93c1-d7d9e921fd9d
+# ╠═3d510337-2fc8-4768-bbea-4f3e83cee127

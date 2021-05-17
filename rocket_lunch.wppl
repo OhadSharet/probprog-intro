@@ -1,0 +1,31 @@
+ var rocket_lunch = function(v0,angle) { 
+    var vy = v0 * Math.sin(angle)
+    var vx = v0 * Math.cos(angle)  
+    var x = 0
+    var y = 0
+    var gravity = 10
+    
+    var while_loop = function(x,y,vy){
+      var wind = gaussian(1,3)
+      if(y<0)
+        return x
+      else
+        return while_loop(x+wind+vx,y+vy,vy-gravity)
+    }
+     return while_loop(x,y,vy)
+   }
+ 
+ var model = function(){
+   var e = Exponential({a:0.01})
+   var v0 = sample(e)
+   var u = Uniform({a:0, b:1.57})
+   var angle =sample(u)
+   var x = rocket_lunch(v0, angle)
+   observe(Gaussian({mu: x, sigma: 10}), 1000);
+   return [v0,angle]
+   
+ }
+ var d = Infer({method: 'MCMC', samples:100000, maxScore: 3}, model)
+ viz(d)
+ 
+ model()
